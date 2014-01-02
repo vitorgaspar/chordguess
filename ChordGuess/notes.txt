@@ -1,0 +1,2 @@
+Generate Java code from Xml/Xsd
+http://elegantcode.com/2010/08/07/dont-parse-that-xml/

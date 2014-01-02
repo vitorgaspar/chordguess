@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config 
+    xmlns="http://www.vgaspar.pt/chordguess/config"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.vgaspar.pt/chordguess/config config.xsd">
+	<chords>
+	    <chord id="A" file="A.mp3" />
+	    <chord id="D" file="D.mp3" />
+	    <chord id="E" file="E.mp3" />
+	</chords>
+	<screens>
+		<chordGuess>
+		    <options>
+		        <use id="A" />
+		        <use id="D" />
+		        <use id="E" />
+		    </options>
+		</chordGuess>
+	</screens>
+</config>
