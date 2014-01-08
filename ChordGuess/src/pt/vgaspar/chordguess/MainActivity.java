@@ -87,7 +87,8 @@ public class MainActivity extends Activity {
     	
     	RelativeLayout rlMain = (RelativeLayout)findViewById(R.id.rlMain);
     	LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-   
+    	
+    	packingAlgorithm = new PackingAlgorithm(1024, 768, 3);
     	ButtonPlacing buttonPlacing = packingAlgorithm.getNext();
     	// TODO: instantiate packingAlgorithm
     	// TODO: implement it: http://stackoverflow.com/questions/7439560/whats-the-algorithm-to-pack-squares-and-rectangles
