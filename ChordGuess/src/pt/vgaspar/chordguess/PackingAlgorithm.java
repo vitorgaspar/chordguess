@@ -37,11 +37,8 @@ public class PackingAlgorithm implements IPackingAlgorithm {
 	// Relation between width and height assumes a square button
 	private int buttonWidth() {
 		return (int)Math.floor(
-				Math.max( 
-						-2 * gap + ( Math.sqrt(eachButtonArea()) / 2 ),
-						-2 * gap - ( Math.sqrt(eachButtonArea()) / 2 )
-					)
-				);
+				( -2 * gap ) + ( Math.sqrt(4 * eachButtonArea()) / 2 )
+		);
 	}
 	
 	private int buttonHeight() {
@@ -55,18 +52,18 @@ public class PackingAlgorithm implements IPackingAlgorithm {
 		placing.width = buttonWidth();
 		placing.height = buttonHeight();
 		
-		int nextXOnNextColumn = gap + ((placing.width + gap) * currentColumn);
+		int nextXOnNextColumn = gap + ((placing.width + (2 * gap)) * currentColumn);
 		int otherEdge = nextXOnNextColumn + placing.width + gap;
 		if (otherEdge > frameWidth) {
 			placing.x = gap;
 			currentRow++;
-			currentColumn = 0;
+			currentColumn = 1;
 		} else {
 			placing.x = nextXOnNextColumn;
 			currentColumn++;
 		}
 		
-		placing.y = gap + ((placing.height + gap) * currentRow);
+		placing.y = gap + ((placing.height + (2 * gap)) * currentRow);
 		
 		return placing;
 	}
