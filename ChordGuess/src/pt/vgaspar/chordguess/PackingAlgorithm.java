@@ -7,6 +7,9 @@ public class PackingAlgorithm implements IPackingAlgorithm {
 	private int numberButtons;
 	private int gap;
 	
+	private int frameX;
+	private int frameY;
+	
 	private int currentColumn;
 	private int currentRow;
 	
@@ -24,6 +27,24 @@ public class PackingAlgorithm implements IPackingAlgorithm {
 		
 		this.currentColumn = 0;
 		this.currentRow = 0;
+		
+		this.frameX = 0;
+		this.frameY = 0;
+	}
+	
+	public PackingAlgorithm(
+			int frameWidth, 
+			int frameHeight, 
+			int numberButtons,
+			int gap,
+			int frameX,
+			int frameY
+	) 
+	{
+		this(frameWidth, frameHeight, numberButtons, gap);
+		
+		this.frameX = frameX;
+		this.frameY = frameY;
 	}
 	
 	private double availableArea() {
@@ -46,24 +67,26 @@ public class PackingAlgorithm implements IPackingAlgorithm {
 	}
 
 	@Override
-	public ButtonPlacing getNext() {
+	public ControlLayout getNext() {
 		
-		ButtonPlacing placing = new ButtonPlacing();
+		ControlLayout placing = new ControlLayout();
+		placing.x = frameX;
+		placing.y = frameY;
 		placing.width = buttonWidth();
 		placing.height = buttonHeight();
 		
 		int nextXOnNextColumn = gap + ((placing.width + (2 * gap)) * currentColumn);
 		int otherEdge = nextXOnNextColumn + placing.width + gap;
 		if (otherEdge > frameWidth) {
-			placing.x = gap;
+			placing.x += gap;
 			currentRow++;
 			currentColumn = 1;
 		} else {
-			placing.x = nextXOnNextColumn;
+			placing.x += nextXOnNextColumn;
 			currentColumn++;
 		}
 		
-		placing.y = gap + ((placing.height + (2 * gap)) * currentRow);
+		placing.y += gap + ((placing.height + (2 * gap)) * currentRow);
 		
 		return placing;
 	}

@@ -9,7 +9,7 @@
 	    <chord id="E" file="E.mp3" />
 	</chords>
 	<screens>
-		<chordGuess>
+		<chordGuess padding="2">
 		    <options>
 		        <use id="A" />
 		        <use id="D" />

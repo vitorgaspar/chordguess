@@ -9,13 +9,13 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
 import pt.vgaspar.chordguess.autogenconfig.Chord;
-import pt.vgaspar.chordguess.autogenconfig.Chords;
 import pt.vgaspar.chordguess.autogenconfig.Use;
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
+import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,7 +31,6 @@ public class MainActivity extends Activity {
 	private Map<String, String> chordLibrary;
 	private String currentChord;
 	private Random rand;
-	private IPackingAlgorithm packingAlgorithm;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +39,13 @@ public class MainActivity extends Activity {
         
         try {
         	AppConfig config = AppConfig.Create("config.xml");
+        	AppScreenLayout screenLayout = createScreenLayout();
+        	AppContext context = new AppContext(config, screenLayout);
         	
         	buildLibrary(config);
         	rand = new Random();
-        	
-        	createScreen(config);
+        	 
+        	createScreen(context);
         	
         	resetTexts();
         	playNewChord();
@@ -54,31 +55,47 @@ public class MainActivity extends Activity {
         }
     }
     
-    private void createScreen(AppConfig config) {
+    private void createScreen(AppContext context) {    	
+    	// Answers section
+    	ControlLayout answersSection = new ControlLayout();
+    	answersSection.width = context.getScreenLayout().getWidth();
+    	answersSection.height = // 10% of total screen height 
+    			(int)Math.floor((double)context.getScreenLayout().getHeight() * .1);
+    	answersSection.x = 0;
+    	answersSection.y = // place 90% to the bottom of the screen
+    			context.getScreenLayout().getHeight() - answersSection.height;
+    	
+    	// TODO: place answer section controls
+    	
+    	// Buttons
+    	ControlLayout buttonsSection = new ControlLayout();
+    	buttonsSection.width = context.getScreenLayout().getWidth();
+    	buttonsSection.height = // everything minus the answers section
+    			context.getScreenLayout().getHeight() - answersSection.height;
+    	buttonsSection.x = 0;
+    	buttonsSection.y = 0;
+    	
     	List<Use> chordsUsed = 
-    			config.getScreens().getChordGuess().getOptions().getUse();
+    			context.getConfig().getScreens().getChordGuess().getOptions().getUse();
+    	IPackingAlgorithm packingAlgorithm = new PackingAlgorithm
+		(
+				buttonsSection.width,
+				buttonsSection.height,
+				chordsUsed.size(),
+				0,
+				buttonsSection.x,
+				buttonsSection.y
+		);
     	
     	for (int i = 0; i < chordsUsed.size(); ++i) {
     		Use use = chordsUsed.get(i);
-    		Chord chord = config.getChordWithId(use.getId());
-    		createGuessButton(chord);
+    		Chord chord = context.getConfig().getChordWithId(use.getId());
+    		createGuessButton(packingAlgorithm, chord);
     	}
     }
     
-    private void createGuessButton(Chord chord) {
-    	
-    	/*
-<Button
-    android:id="@+id/btnEChord"
-    style="?android:attr/buttonStyleSmall"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignBaseline="@+id/btnDChord"
-    android:layout_alignBottom="@+id/btnDChord"
-    android:layout_marginLeft="23dp"
-    android:layout_toRightOf="@+id/btnDChord"
-    android:text="E" />
-    	 */
+    private void createGuessButton(IPackingAlgorithm packingAlgorithm, Chord chord) {
+    	ControlLayout buttonLayout = packingAlgorithm.getNext();
     	
     	final String chordName = chord.getId();
     	
@@ -86,11 +103,9 @@ public class MainActivity extends Activity {
     	btnChord.setText(chordName);
     	
     	RelativeLayout rlMain = (RelativeLayout)findViewById(R.id.rlMain);
-    	LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    	
-    	ButtonPlacing buttonPlacing = packingAlgorithm.getNext();
-    	// TODO: instantiate packingAlgorithm
-    	// TODO: implement it: http://stackoverflow.com/questions/7439560/whats-the-algorithm-to-pack-squares-and-rectangles
+    	LayoutParams lp = new LayoutParams(buttonLayout.width, buttonLayout.height);
+    	lp.leftMargin = buttonLayout.x;
+    	lp.rightMargin = buttonLayout.y;
     	
     	rlMain.addView(btnChord, lp);
     	
@@ -99,7 +114,6 @@ public class MainActivity extends Activity {
             	answer(chordName);
             }
         });
-    	
     }
     
     private void answer(String chordAnswer) {
@@ -204,6 +218,30 @@ public class MainActivity extends Activity {
     private String pickChord() {
     	int i = rand.nextInt(chordIndex.size());
     	return chordIndex.get(i);
+    }
+    
+    private AppScreenLayout createScreenLayout() {
+    	Display display = getWindowManager().getDefaultDisplay();
+    	Point size = new Point();
+    	display.getSize(size);
+    	
+    	int width = size.x;
+    	int height = size.y;
+    	
+    	Orientation orientation = Orientation.UNKNOWN;
+    	if(width == height){
+            orientation = Orientation.SQUARE;
+        } else{ 
+            if(width < height){
+                orientation = Orientation.PORTRAIT;
+            }else { 
+                 orientation = Orientation.LANDSCAPE;
+            }
+        }
+    	
+    	AppScreenLayout screenLayout = 
+    			new AppScreenLayout(width, height, orientation);
+    	return screenLayout;
     }
     
     public void onDestroy() {

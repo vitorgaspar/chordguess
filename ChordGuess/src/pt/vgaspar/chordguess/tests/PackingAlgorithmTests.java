@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import pt.vgaspar.chordguess.ButtonPlacing;
+import pt.vgaspar.chordguess.ControlLayout;
 import pt.vgaspar.chordguess.IPackingAlgorithm;
 import pt.vgaspar.chordguess.PackingAlgorithm;
 
@@ -16,10 +16,10 @@ public class PackingAlgorithmTests extends ChordGuessBaseTestCase {
 		IPackingAlgorithm packingAlgorithm = new PackingAlgorithm(20, 20, 4, 0);
 
 		// Act
-		ButtonPlacing placing1 = packingAlgorithm.getNext();
-		ButtonPlacing placing2 = packingAlgorithm.getNext();
-		ButtonPlacing placing3 = packingAlgorithm.getNext();
-		ButtonPlacing placing4 = packingAlgorithm.getNext();
+		ControlLayout placing1 = packingAlgorithm.getNext();
+		ControlLayout placing2 = packingAlgorithm.getNext();
+		ControlLayout placing3 = packingAlgorithm.getNext();
+		ControlLayout placing4 = packingAlgorithm.getNext();
 		
 		// Assert
 		assertEquals(0, placing1.x);
@@ -49,10 +49,10 @@ public class PackingAlgorithmTests extends ChordGuessBaseTestCase {
 		IPackingAlgorithm packingAlgorithm = new PackingAlgorithm(20, 20, 4, 1);
 
 		// Act
-		ButtonPlacing placing1 = packingAlgorithm.getNext();
-		ButtonPlacing placing2 = packingAlgorithm.getNext();
-		ButtonPlacing placing3 = packingAlgorithm.getNext();
-		ButtonPlacing placing4 = packingAlgorithm.getNext();
+		ControlLayout placing1 = packingAlgorithm.getNext();
+		ControlLayout placing2 = packingAlgorithm.getNext();
+		ControlLayout placing3 = packingAlgorithm.getNext();
+		ControlLayout placing4 = packingAlgorithm.getNext();
 		
 		// Assert
 		assertEquals(1, placing1.x);
@@ -82,22 +82,22 @@ public class PackingAlgorithmTests extends ChordGuessBaseTestCase {
 		IPackingAlgorithm packingAlgorithm = new PackingAlgorithm(20, 20, 16, 2);
 
 		// Act
-		ButtonPlacing placing1 = packingAlgorithm.getNext();
+		ControlLayout placing1 = packingAlgorithm.getNext();
 		packingAlgorithm.getNext();
-		ButtonPlacing placing3 = packingAlgorithm.getNext();
+		ControlLayout placing3 = packingAlgorithm.getNext();
 		packingAlgorithm.getNext();
-		ButtonPlacing placing5 = packingAlgorithm.getNext();
-		packingAlgorithm.getNext();
-		packingAlgorithm.getNext();
-		packingAlgorithm.getNext();
-		packingAlgorithm.getNext();
-		packingAlgorithm.getNext();
-		ButtonPlacing placing11 = packingAlgorithm.getNext();
+		ControlLayout placing5 = packingAlgorithm.getNext();
 		packingAlgorithm.getNext();
 		packingAlgorithm.getNext();
 		packingAlgorithm.getNext();
 		packingAlgorithm.getNext();
-		ButtonPlacing placing16 = packingAlgorithm.getNext();
+		packingAlgorithm.getNext();
+		ControlLayout placing11 = packingAlgorithm.getNext();
+		packingAlgorithm.getNext();
+		packingAlgorithm.getNext();
+		packingAlgorithm.getNext();
+		packingAlgorithm.getNext();
+		ControlLayout placing16 = packingAlgorithm.getNext();
 		
 		// Assert
 		assertEquals(2, placing1.x);
@@ -132,14 +132,14 @@ public class PackingAlgorithmTests extends ChordGuessBaseTestCase {
 		IPackingAlgorithm packingAlgorithm = new PackingAlgorithm(800, 480, 8, 5);
 
 		// Act
-		ButtonPlacing placing1 = packingAlgorithm.getNext();
-		ButtonPlacing placing2 = packingAlgorithm.getNext();
-		ButtonPlacing placing3 = packingAlgorithm.getNext();
-		ButtonPlacing placing4 = packingAlgorithm.getNext();
-		ButtonPlacing placing5 = packingAlgorithm.getNext();
-		ButtonPlacing placing6 = packingAlgorithm.getNext();
-		ButtonPlacing placing7 = packingAlgorithm.getNext();
-		ButtonPlacing placing8 = packingAlgorithm.getNext();
+		ControlLayout placing1 = packingAlgorithm.getNext();
+		ControlLayout placing2 = packingAlgorithm.getNext();
+		ControlLayout placing3 = packingAlgorithm.getNext();
+		ControlLayout placing4 = packingAlgorithm.getNext();
+		ControlLayout placing5 = packingAlgorithm.getNext();
+		ControlLayout placing6 = packingAlgorithm.getNext();
+		ControlLayout placing7 = packingAlgorithm.getNext();
+		ControlLayout placing8 = packingAlgorithm.getNext();
 		
 		// Assert
 		assertEquals(5, placing1.x);
