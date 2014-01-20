@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ChordGuess</groupId>
 	<artifactId>ChordGuess</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>M01a</version>
 	<name>Chord Guess</name>
 	<description>Android app to train your ear</description>
 	<build>
@@ -31,14 +31,9 @@
 	</repositories>
 	<dependencies>
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.2.7</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>2.2.7</version>
+		    <groupId>org.simpleframework</groupId>
+		    <artifactId>simple-xml</artifactId>
+		    <version>2.7.1</version>
 		</dependency>
 	</dependencies>
 </project>

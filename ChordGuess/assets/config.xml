@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config 
-    xmlns="http://www.vgaspar.pt/chordguess/config"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.vgaspar.pt/chordguess/config config.xsd">
+    xmlns:xsi="w3.org/2001/XMLSchema-instance"
+	xmlns:xsd="w3.org/2001/XMLSchema"
+	xmlns="http://www.vgaspar.pt/chordguess/config">
 	<chords>
 	    <chord id="A" file="A.mp3" />
 	    <chord id="D" file="D.mp3" />
