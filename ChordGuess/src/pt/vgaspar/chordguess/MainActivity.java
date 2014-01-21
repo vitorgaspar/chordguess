@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         
         try {
-        	AppConfig config = AppConfig.createFromAsset("config.xml");
+        	AppConfig config = AppConfig.createFromAsset(getAssets(), "config.xml");
         	AppScreenLayout screenLayout = createScreenLayout();
         	AppContext context = new AppContext(config, screenLayout);
         	

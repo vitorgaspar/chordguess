@@ -2,12 +2,14 @@ package pt.vgaspar.chordguess;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
+import android.content.res.AssetManager;
 import pt.vgaspar.chordguess.config.Chord;
 import pt.vgaspar.chordguess.exceptions.ConfigParsingException;
 
@@ -34,8 +36,19 @@ public class AppConfig extends pt.vgaspar.chordguess.config.Config {
 		return newConfig;
 	}
 	
-	public static AppConfig createFromAsset(String filename) throws ConfigParsingException {
-		return createFromFile("file:///android_asset/" + filename);
+	public static AppConfig createFromAsset(AssetManager assets, String filename) throws ConfigParsingException {
+		AppConfig newConfig = null;
+		
+		try {
+			newConfig = createFromInputStream(assets.open(filename));
+			
+		} catch (Exception e) {
+			
+			throw new ConfigParsingException(
+					"Failed to parse [" + filename + "] from assets.", e);
+		}
+
+		return newConfig;
 	}
 	
 	public static AppConfig createFromFile(String url) throws ConfigParsingException {
@@ -59,6 +72,11 @@ public class AppConfig extends pt.vgaspar.chordguess.config.Config {
 	protected static AppConfig createFromReader(Reader reader) throws Exception {
 		Serializer serializer = new Persister();
 		return (AppConfig) serializer.read(AppConfig.class, reader);
+	}
+	
+	protected static AppConfig createFromInputStream(InputStream stream) throws Exception {
+		Serializer serializer = new Persister();
+		return (AppConfig) serializer.read(AppConfig.class, stream);
 	}
 
 	public Chord getChordWithId(String id) {

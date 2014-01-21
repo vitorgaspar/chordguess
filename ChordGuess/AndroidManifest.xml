@@ -5,8 +5,8 @@
     android:versionName="M01a" >
 
     <uses-sdk
-        android:minSdkVersion="10"
-        android:targetSdkVersion="10" />
+        android:minSdkVersion="13"
+        android:targetSdkVersion="13" />
 
     <application
         android:allowBackup="true"
