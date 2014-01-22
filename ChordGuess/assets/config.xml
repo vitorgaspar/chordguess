@@ -5,15 +5,21 @@
 	xmlns="http://www.vgaspar.pt/chordguess/config">
 	<chords>
 	    <chord id="A" file="A.mp3" />
-	    <chord id="D" file="D.mp3" />
 	    <chord id="E" file="E.mp3" />
+	    <chord id="D" file="D.mp3" />
+	    <chord id="Amin" file="Amin.mp3" />
+	    <chord id="Emin" file="Emin.mp3" />
+	    <chord id="Dmin" file="Dmin.mp3" />
 	</chords>
 	<screens>
 		<chordGuess padding="2">
 		    <options>
 		        <use id="A" />
-		        <use id="D" />
+		        <use id="Amin" />
 		        <use id="E" />
+		        <use id="Emin" />
+		        <use id="D" />
+		        <use id="Dmin" />
 		    </options>
 		</chordGuess>
 	</screens>

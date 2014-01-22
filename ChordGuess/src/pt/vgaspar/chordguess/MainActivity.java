@@ -12,13 +12,16 @@ import pt.vgaspar.chordguess.config.Chord;
 import pt.vgaspar.chordguess.config.Use;
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -59,7 +62,10 @@ public class MainActivity extends Activity {
         }
     }
     
-    private void createScreen(AppContext context) {    	
+    private void createScreen(AppContext context) {
+    	RelativeLayout rlMain = (RelativeLayout)findViewById(R.id.rlMain);
+    	rlMain.setBackgroundColor(Color.WHITE);
+    	
     	createAnswersSection(context);    	
     	createButtonsSection(context);
     }
@@ -71,7 +77,8 @@ public class MainActivity extends Activity {
     			(int)Math.floor((double)context.getScreenLayout().getHeight() * .1);
     	answersSection.x = 0;
     	answersSection.y = // place 90% to the bottom of the screen
-    			context.getScreenLayout().getHeight() - answersSection.height;
+    			context.getScreenLayout().getHeight() - answersSection.height - 100;
+    	// XXX: Not all screen is usable, there are some blanks, investigate
     	
     	RelativeLayout rlMain = (RelativeLayout)findViewById(R.id.rlMain);
     	LayoutParams lpRlAnswers = new LayoutParams(answersSection.width, answersSection.height);
@@ -79,17 +86,20 @@ public class MainActivity extends Activity {
     	lpRlAnswers.topMargin = answersSection.y;
     	
     	RelativeLayout rlAnswers = new RelativeLayout(this);
-    	rlMain.addView(rlAnswers);
+    	rlAnswers.setBackgroundColor(Color.GREEN);
+    	rlMain.addView(rlAnswers, lpRlAnswers);
     	
     	TextView txtWrongRight = new TextView(this);
     	txtWrongRight.setId(TXT_WRONG_RIGHT_ID);
+    	txtWrongRight.setTextColor(Color.WHITE);
     	LayoutParams lpTxtWrongRight = new LayoutParams(answersSection.width / 2, answersSection.height / 2);
     	lpTxtWrongRight.leftMargin = 0;
     	lpTxtWrongRight.topMargin = 0;
     	rlAnswers.addView(txtWrongRight, lpTxtWrongRight);
     	
     	TextView txtChordName = new TextView(this);
-    	txtWrongRight.setId(TXT_CHORD_NAME_ID);
+    	txtChordName.setId(TXT_CHORD_NAME_ID);
+    	txtChordName.setTextColor(Color.WHITE);
     	LayoutParams lpTxtChordName = new LayoutParams(answersSection.width / 2, answersSection.height / 2);
     	lpTxtChordName.leftMargin = answersSection.width / 2;
     	lpTxtChordName.topMargin = 0;
@@ -101,16 +111,21 @@ public class MainActivity extends Activity {
     	buttonsSection.width = context.getScreenLayout().getWidth();
     	buttonsSection.height = // 90% of total screen height 
     			(int)Math.floor((double)context.getScreenLayout().getHeight() * .9);
+    	
     	buttonsSection.x = 0;
     	buttonsSection.y = 0;
     	
     	List<Use> chordsUsed = 
     			context.getConfig().screens.chordGuess.options.use;
+    	
+    	// XXX: Algorithm doesn't respect screen dimensions, investigate better
+    	int numberButtons = chordsUsed.size() + 4;
+    	
     	IPackingAlgorithm packingAlgorithm = new PackingAlgorithm
 		(
 				buttonsSection.width,
 				buttonsSection.height,
-				chordsUsed.size(),
+				numberButtons,
 				0,
 				buttonsSection.x,
 				buttonsSection.y
@@ -145,7 +160,7 @@ public class MainActivity extends Activity {
         });
     }
     
-    private void answer(String chordAnswer) {
+    private void answer(String chordAnswer) {    	
     	TextView txtChordName = (TextView) findViewById(TXT_CHORD_NAME_ID);
     	TextView txtWrongRight = (TextView) findViewById(TXT_WRONG_RIGHT_ID);
     	
@@ -254,8 +269,14 @@ public class MainActivity extends Activity {
     	Point size = new Point();
     	display.getSize(size);
     	
+    	Rect rectgle= new Rect();
+    	Window window= getWindow();
+    	window.getDecorView().getWindowVisibleDisplayFrame(rectgle);
+    	int contentViewTop = 
+    	    window.findViewById(Window.ID_ANDROID_CONTENT).getTop();   	
+    	
     	int width = size.x;
-    	int height = size.y;
+    	int height = size.y - contentViewTop;
     	
     	Orientation orientation = Orientation.UNKNOWN;
     	if(width == height){
