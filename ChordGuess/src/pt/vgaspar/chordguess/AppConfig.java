@@ -84,7 +84,7 @@ public class AppConfig extends pt.vgaspar.chordguess.config.Config {
 		for (int i = 0; i < chords.chord.size(); ++i) {
 			Chord chord = chords.chord.get(i);
 			
-			if (chord.id == id) {
+			if (chord.id.equals(id)) {
 				return chord;
 			}
 		}

@@ -119,7 +119,7 @@ public class MainActivity extends Activity {
     			context.getConfig().screens.chordGuess.options.use;
     	
     	// XXX: Algorithm doesn't respect screen dimensions, investigate better
-    	int numberButtons = chordsUsed.size() + 4;
+    	int numberButtons = chordsUsed.size() + 6;
     	
     	IPackingAlgorithm packingAlgorithm = new PackingAlgorithm
 		(
