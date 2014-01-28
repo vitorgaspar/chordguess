@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pt.vgaspar.chordguess"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="M01a" >
 
     <uses-sdk
-        android:minSdkVersion="10"
-        android:targetSdkVersion="10" />
+        android:minSdkVersion="13"
+        android:targetSdkVersion="13" />
 
     <application
         android:allowBackup="true"

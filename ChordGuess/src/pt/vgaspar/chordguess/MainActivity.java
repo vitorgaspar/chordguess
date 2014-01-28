@@ -8,17 +8,20 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
-import pt.vgaspar.chordguess.autogenconfig.Chord;
-import pt.vgaspar.chordguess.autogenconfig.Chords;
-import pt.vgaspar.chordguess.autogenconfig.Use;
+import pt.vgaspar.chordguess.config.Chord;
+import pt.vgaspar.chordguess.config.Use;
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
+import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -31,20 +34,25 @@ public class MainActivity extends Activity {
 	private Map<String, String> chordLibrary;
 	private String currentChord;
 	private Random rand;
-	private IPackingAlgorithm packingAlgorithm;
+	
+	private int TXT_WRONG_RIGHT_ID = 100;
+	private int TXT_CHORD_NAME_ID = 110;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         setContentView(R.layout.activity_main);
         
         try {
-        	AppConfig config = AppConfig.Create("config.xml");
+        	AppConfig config = AppConfig.createFromAsset(getAssets(), "config.xml");
+        	AppScreenLayout screenLayout = createScreenLayout();
+        	AppContext context = new AppContext(config, screenLayout);
         	
         	buildLibrary(config);
         	rand = new Random();
-        	
-        	createScreen(config);
+        	 
+        	createScreen(context);
         	
         	resetTexts();
         	playNewChord();
@@ -54,43 +62,94 @@ public class MainActivity extends Activity {
         }
     }
     
-    private void createScreen(AppConfig config) {
+    private void createScreen(AppContext context) {
+    	RelativeLayout rlMain = (RelativeLayout)findViewById(R.id.rlMain);
+    	rlMain.setBackgroundColor(Color.WHITE);
+    	
+    	createAnswersSection(context);    	
+    	createButtonsSection(context);
+    }
+
+	private void createAnswersSection(AppContext context) {
+		ControlLayout answersSection = new ControlLayout();
+    	answersSection.width = context.getScreenLayout().getWidth();
+    	answersSection.height = // 10% of total screen height 
+    			(int)Math.floor((double)context.getScreenLayout().getHeight() * .1);
+    	answersSection.x = 0;
+    	answersSection.y = // place 90% to the bottom of the screen
+    			context.getScreenLayout().getHeight() - answersSection.height - 100;
+    	// XXX: Not all screen is usable, there are some blanks, investigate
+    	
+    	RelativeLayout rlMain = (RelativeLayout)findViewById(R.id.rlMain);
+    	LayoutParams lpRlAnswers = new LayoutParams(answersSection.width, answersSection.height);
+    	lpRlAnswers.leftMargin = answersSection.x;
+    	lpRlAnswers.topMargin = answersSection.y;
+    	
+    	RelativeLayout rlAnswers = new RelativeLayout(this);
+    	rlAnswers.setBackgroundColor(Color.GREEN);
+    	rlMain.addView(rlAnswers, lpRlAnswers);
+    	
+    	TextView txtWrongRight = new TextView(this);
+    	txtWrongRight.setId(TXT_WRONG_RIGHT_ID);
+    	txtWrongRight.setTextColor(Color.WHITE);
+    	LayoutParams lpTxtWrongRight = new LayoutParams(answersSection.width / 2, answersSection.height / 2);
+    	lpTxtWrongRight.leftMargin = 0;
+    	lpTxtWrongRight.topMargin = 0;
+    	rlAnswers.addView(txtWrongRight, lpTxtWrongRight);
+    	
+    	TextView txtChordName = new TextView(this);
+    	txtChordName.setId(TXT_CHORD_NAME_ID);
+    	txtChordName.setTextColor(Color.WHITE);
+    	LayoutParams lpTxtChordName = new LayoutParams(answersSection.width / 2, answersSection.height / 2);
+    	lpTxtChordName.leftMargin = answersSection.width / 2;
+    	lpTxtChordName.topMargin = 0;
+    	rlAnswers.addView(txtChordName, lpTxtChordName);
+	}
+
+	private void createButtonsSection(AppContext context) {
+    	ControlLayout buttonsSection = new ControlLayout();
+    	buttonsSection.width = context.getScreenLayout().getWidth();
+    	buttonsSection.height = // 90% of total screen height 
+    			(int)Math.floor((double)context.getScreenLayout().getHeight() * .9);
+    	
+    	buttonsSection.x = 0;
+    	buttonsSection.y = 0;
+    	
     	List<Use> chordsUsed = 
-    			config.getScreens().getChordGuess().getOptions().getUse();
+    			context.getConfig().screens.chordGuess.options.use;
+    	
+    	// XXX: Algorithm doesn't respect screen dimensions, investigate better
+    	int numberButtons = chordsUsed.size() + 6;
+    	
+    	IPackingAlgorithm packingAlgorithm = new PackingAlgorithm
+		(
+				buttonsSection.width,
+				buttonsSection.height,
+				numberButtons,
+				0,
+				buttonsSection.x,
+				buttonsSection.y
+		);
     	
     	for (int i = 0; i < chordsUsed.size(); ++i) {
     		Use use = chordsUsed.get(i);
-    		Chord chord = config.getChordWithId(use.getId());
-    		createGuessButton(chord);
+    		Chord chord = context.getConfig().getChordWithId(use.id);
+    		createGuessButton(packingAlgorithm, chord);
     	}
-    }
+	}
     
-    private void createGuessButton(Chord chord) {
+    private void createGuessButton(IPackingAlgorithm packingAlgorithm, Chord chord) {
+    	ControlLayout buttonLayout = packingAlgorithm.getNext();
     	
-    	/*
-<Button
-    android:id="@+id/btnEChord"
-    style="?android:attr/buttonStyleSmall"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignBaseline="@+id/btnDChord"
-    android:layout_alignBottom="@+id/btnDChord"
-    android:layout_marginLeft="23dp"
-    android:layout_toRightOf="@+id/btnDChord"
-    android:text="E" />
-    	 */
-    	
-    	final String chordName = chord.getId();
+    	final String chordName = chord.id;
     	
     	Button btnChord = new Button(this);
     	btnChord.setText(chordName);
     	
     	RelativeLayout rlMain = (RelativeLayout)findViewById(R.id.rlMain);
-    	LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-   
-    	ButtonPlacing buttonPlacing = packingAlgorithm.getNext();
-    	// TODO: instantiate packingAlgorithm
-    	// TODO: implement it: http://stackoverflow.com/questions/7439560/whats-the-algorithm-to-pack-squares-and-rectangles
+    	LayoutParams lp = new LayoutParams(buttonLayout.width, buttonLayout.height);
+    	lp.leftMargin = buttonLayout.x;
+    	lp.topMargin = buttonLayout.y;
     	
     	rlMain.addView(btnChord, lp);
     	
@@ -99,12 +158,11 @@ public class MainActivity extends Activity {
             	answer(chordName);
             }
         });
-    	
     }
     
-    private void answer(String chordAnswer) {
-    	TextView txtChordName = (TextView) findViewById(R.id.txtChordName);
-    	TextView txtWrongRight = (TextView) findViewById(R.id.txtWrongRight);
+    private void answer(String chordAnswer) {    	
+    	TextView txtChordName = (TextView) findViewById(TXT_CHORD_NAME_ID);
+    	TextView txtWrongRight = (TextView) findViewById(TXT_WRONG_RIGHT_ID);
     	
 		txtChordName.setText(currentChord);
     	
@@ -127,8 +185,8 @@ public class MainActivity extends Activity {
     }
     
     private void resetTexts() {
-    	TextView txtChordName = (TextView) findViewById(R.id.txtChordName);
-    	TextView txtWrongRight = (TextView) findViewById(R.id.txtWrongRight);
+    	TextView txtChordName = (TextView) findViewById(TXT_CHORD_NAME_ID);
+    	TextView txtWrongRight = (TextView) findViewById(TXT_WRONG_RIGHT_ID);
     	
     	txtChordName.setText("");
     	txtWrongRight.setText("");
@@ -146,14 +204,14 @@ public class MainActivity extends Activity {
     	chordLibrary = new TreeMap<String, String>();
     	chordIndex = new LinkedList<String>();
     	
-    	List<Chord> chords = config.getChords().getChord();
+    	List<Chord> chords = config.chords.chord;
     	
     	for (int i = 0; i < chords.size(); ++i) {
     		
     		Chord chord = chords.get(i);
     		   		
-    		String file = chord.getFile();
-    		String name = chord.getId();
+    		String file = chord.file;
+    		String name = chord.id;
     		
     		chordLibrary.put(name, file);
     		chordIndex.add(name);
@@ -204,6 +262,36 @@ public class MainActivity extends Activity {
     private String pickChord() {
     	int i = rand.nextInt(chordIndex.size());
     	return chordIndex.get(i);
+    }
+    
+    private AppScreenLayout createScreenLayout() {
+    	Display display = getWindowManager().getDefaultDisplay();
+    	Point size = new Point();
+    	display.getSize(size);
+    	
+    	Rect rectgle= new Rect();
+    	Window window= getWindow();
+    	window.getDecorView().getWindowVisibleDisplayFrame(rectgle);
+    	int contentViewTop = 
+    	    window.findViewById(Window.ID_ANDROID_CONTENT).getTop();   	
+    	
+    	int width = size.x;
+    	int height = size.y - contentViewTop;
+    	
+    	Orientation orientation = Orientation.UNKNOWN;
+    	if(width == height){
+            orientation = Orientation.SQUARE;
+        } else{ 
+            if(width < height){
+                orientation = Orientation.PORTRAIT;
+            }else { 
+                 orientation = Orientation.LANDSCAPE;
+            }
+        }
+    	
+    	AppScreenLayout screenLayout = 
+    			new AppScreenLayout(width, height, orientation);
+    	return screenLayout;
     }
     
     public void onDestroy() {

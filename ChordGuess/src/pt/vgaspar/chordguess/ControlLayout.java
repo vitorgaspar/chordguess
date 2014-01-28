@@ -1,6 +1,6 @@
 package pt.vgaspar.chordguess;
 
-public class ButtonPlacing {
+public class ControlLayout {
 	public int x;
 	public int y;
 	

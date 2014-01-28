@@ -1,19 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config 
-    xmlns="http://www.vgaspar.pt/chordguess/config"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.vgaspar.pt/chordguess/config config.xsd">
+    xmlns:xsi="w3.org/2001/XMLSchema-instance"
+	xmlns:xsd="w3.org/2001/XMLSchema"
+	xmlns="http://www.vgaspar.pt/chordguess/config">
 	<chords>
-	    <chord id="A" file="A.mp3" />
-	    <chord id="D" file="D.mp3" />
-	    <chord id="E" file="E.mp3" />
+	    <chord id="A" file="beginners/A.mp3" />
+	    <chord id="Amin" file="beginners/Amin.mp3" />
+	    <chord id="C" file="beginners/C.mp3" />
+	    <chord id="D" file="beginners/D.mp3" />
+	    <chord id="Dmin" file="beginners/Dmin.mp3" />
+	    <chord id="E" file="beginners/E.mp3" />
+	    <chord id="Emin" file="beginners/Emin.mp3" />
+	    <chord id="G" file="beginners/G.mp3" />
 	</chords>
 	<screens>
-		<chordGuess>
+		<chordGuess padding="2">
 		    <options>
 		        <use id="A" />
+		        <use id="Amin" />
+		        <use id="C" />
 		        <use id="D" />
+		        <use id="Dmin" />
 		        <use id="E" />
+		        <use id="Emin" />
+		        <use id="G" />
 		    </options>
 		</chordGuess>
 	</screens>

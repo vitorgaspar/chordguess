@@ -1,31 +1,48 @@
 package pt.vgaspar.chordguess;
 
 import java.io.File;
-import java.util.List;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 
-import pt.vgaspar.chordguess.autogenconfig.Chord;
+import android.content.res.AssetManager;
+import pt.vgaspar.chordguess.config.Chord;
 import pt.vgaspar.chordguess.exceptions.ConfigParsingException;
 
-public class AppConfig extends pt.vgaspar.chordguess.autogenconfig.Config {
+public class AppConfig extends pt.vgaspar.chordguess.config.Config {
 
 	private AppConfig() {
 		
 	}
-	
-	public static AppConfig Create(String filename) throws ConfigParsingException {
+
+	public static AppConfig createFromString(String configXml) throws ConfigParsingException {
 		AppConfig newConfig = null;
 		
 		try {
-			JAXBContext context = JAXBContext.newInstance(AppConfig.class);
+			Reader reader = new StringReader(configXml);
 			
-			File configFile = new File("file:///android_asset/" + filename);
+			newConfig = createFromReader(reader);
 			
-			newConfig = (AppConfig) context.createUnmarshaller().unmarshal(configFile);
+		} catch (Exception e) {
 			
-		} catch (JAXBException e) {
+			throw new ConfigParsingException(
+					"Failed to parse [" + configXml + "]", e);
+		}
+		
+		return newConfig;
+	}
+	
+	public static AppConfig createFromAsset(AssetManager assets, String filename) throws ConfigParsingException {
+		AppConfig newConfig = null;
+		
+		try {
+			newConfig = createFromInputStream(assets.open(filename));
+			
+		} catch (Exception e) {
 			
 			throw new ConfigParsingException(
 					"Failed to parse [" + filename + "] from assets.", e);
@@ -33,14 +50,41 @@ public class AppConfig extends pt.vgaspar.chordguess.autogenconfig.Config {
 
 		return newConfig;
 	}
+	
+	public static AppConfig createFromFile(String url) throws ConfigParsingException {
+		AppConfig newConfig = null;
+		
+		try {
+			File configFile = new File(url);
+			Reader reader = new FileReader(configFile);
+
+			newConfig = createFromReader(reader);
+			
+		} catch (Exception e) {
+			
+			throw new ConfigParsingException(
+					"Failed to parse [" + url + "].", e);
+		}
+
+		return newConfig;
+	}
+	
+	protected static AppConfig createFromReader(Reader reader) throws Exception {
+		Serializer serializer = new Persister();
+		return (AppConfig) serializer.read(AppConfig.class, reader);
+	}
+	
+	protected static AppConfig createFromInputStream(InputStream stream) throws Exception {
+		Serializer serializer = new Persister();
+		return (AppConfig) serializer.read(AppConfig.class, stream);
+	}
 
 	public Chord getChordWithId(String id) {
-		List<Chord> chords = getChords().getChord();
 		
-		for (int i = 0; i < chords.size(); ++i) {
-			Chord chord = chords.get(i);
+		for (int i = 0; i < chords.chord.size(); ++i) {
+			Chord chord = chords.chord.get(i);
 			
-			if (chord.getId() == id) {
+			if (chord.id.equals(id)) {
 				return chord;
 			}
 		}
